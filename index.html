@@ -336,6 +336,33 @@
       position: relative;
     }
 
+    /* Select Achievements */
+    .achievement-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .achievement-list li {
+      font-size: 0.87rem;
+      color: var(--muted);
+      line-height: 1.7;
+      padding-left: 1.1rem;
+      position: relative;
+    }
+
+    .achievement-list li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.55em;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--gradient);
+    }
+
     .job-bullets li::before {
       content: '›';
       position: absolute;
@@ -551,8 +578,19 @@
           </div>
         </div>
         <div class="skill-group">
+          <div class="skill-group-label">Healthcare &amp; Compliance</div>
+          <div class="skill-tags">
+            <span class="skill-tag">Healthcare IT</span>
+            <span class="skill-tag">HIPAA</span>
+            <span class="skill-tag">Digital Workplace</span>
+            <span class="skill-tag">M&amp;A Integration</span>
+          </div>
+        </div>
+        <div class="skill-group">
           <div class="skill-group-label">Leadership</div>
           <div class="skill-tags">
+            <span class="skill-tag">Technology Governance</span>
+            <span class="skill-tag">Executive Communications</span>
             <span class="skill-tag">Scrum / Agile</span>
             <span class="skill-tag">Vendor Management</span>
             <span class="skill-tag">Team Development</span>
@@ -586,13 +624,23 @@
       <section class="section">
         <h2 class="section-title">About</h2>
         <p class="about-text">
-          Senior IT leader with 18+ years of experience in systems administration, endpoint management,
-          and front-line engineering leadership. Currently leading a cross-functional team of 21 engineers
-          at Providence, responsible for the performance and administration of 130,000 Windows and macOS
-          devices across one of the largest health systems in the western United States. Passionate about
-          building high-performing teams, driving operational excellence, and staying at the forefront of
-          enterprise endpoint technology.
+          Senior IT executive with 18+ years leading enterprise endpoint strategy and digital workplace
+          operations at scale. At Providence St. Joseph Health — one of the nation's largest not-for-profit
+          health systems — accountable for the compute environment of 130,000 employees across 51 hospitals
+          and 1,000+ clinics. Partners directly with the CTO and executive leadership on technology standards,
+          vendor governance, and long-range roadmap. Has led major initiatives spanning health system merger
+          integration, cloud platform buildout during COVID response, and next-generation DEX platform migration.
         </p>
+      </section>
+
+      <section class="section">
+        <h2 class="section-title">Select Achievements</h2>
+        <ul class="achievement-list">
+          <li>Set technical direction and led vendor engagement for migration from Aternity to Nexthink, establishing Providence St. Joseph Health's next-generation DEX observability platform across 130,000 endpoints</li>
+          <li>Led endpoint platform integration for Providence's merger with St. Joseph Health, onboarding the acquired organization's entire device fleet onto Providence's client management infrastructure</li>
+          <li>Engineered and scaled a net-new Azure AD + Intune cloud device platform to 20,000 remote devices globally during COVID response — built from zero within weeks of the pandemic declaration</li>
+          <li>Present monthly operational KPIs and multi-year technology roadmap to CTO, Executive Directors, and VPs as part of the executive service review cadence</li>
+        </ul>
       </section>
 
       <section class="section">
@@ -608,10 +656,13 @@
               <span class="job-dates">Jul 2023 – Present</span>
             </div>
             <ul class="job-bullets">
-              <li>Lead a 21-person cross-functional engineering team (10 US-based, 11 India-based) responsible for 130,000 Windows and macOS endpoints</li>
-              <li>Own the annual client experience technology roadmap, evaluating emerging tools and platforms for device management</li>
-              <li>Manage strategic vendor relationships with Microsoft, Apple, Jamf, Riverbed, and GoTo</li>
-              <li>Introduced Scrum framework for managing internal and external project work across the team</li>
+              <li>Accountable for the digital workplace environment of 130,000 employees across Providence St. Joseph Health's 51 hospitals and 1,000+ clinics, leading a 21-person US and India-based engineering team</li>
+              <li>Present monthly operational performance reviews and multi-year technology roadmap to CTO, Executive Directors, and VPs</li>
+              <li>Govern technology standards and approve infrastructure improvements across the enterprise end user compute environment</li>
+              <li>Set technical direction for and led vendor engagement on Aternity to Nexthink DEX migration through contract and procurement process</li>
+              <li>Represent endpoint engineering in HIPAA compliance audits, overseeing endpoint security posture and process governance</li>
+              <li>Manage strategic vendor partnerships with Microsoft, Apple, Jamf, and other key technology providers</li>
+              <li>Scaled Scrum delivery framework across a cross-continental engineering team to improve project delivery and visibility</li>
               <li>Provide mentorship, performance reviews, and career development coaching through weekly 1:1s and annual merit processes</li>
             </ul>
           </div>
@@ -647,6 +698,7 @@
               <span class="job-dates">Jun 2014 – Nov 2018</span>
             </div>
             <ul class="job-bullets">
+              <li>Led endpoint platform integration for Providence's merger with St. Joseph Health, migrating the acquired organization's device fleet onto Providence's SCCM and client management infrastructure</li>
               <li>Managed daily SCCM environment health — client health, distribution points, collection evaluations, and server infrastructure</li>
               <li>Served as tier-3 escalation point for SCCM issues; worked directly with Microsoft support on critical incidents</li>
               <li>Administered Adaptiva OneSite for intelligent content distribution across remote offices</li>
