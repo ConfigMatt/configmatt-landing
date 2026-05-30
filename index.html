@@ -442,6 +442,35 @@
     }
 
     #konami-controls em { color: #666; font-style: normal; }
+
+    /* Mobile swipe progress indicator */
+    #konami-progress {
+      position: fixed;
+      bottom: 1.25rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 6px;
+      opacity: 0;
+      transition: opacity 0.25s;
+      pointer-events: none;
+      z-index: 9000;
+    }
+
+    #konami-progress span {
+      display: block;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.2);
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    #konami-progress span.on {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
   </style>
 </head>
 <body>
@@ -670,6 +699,12 @@
     </main>
   </div>
 
+  <!-- Mobile swipe progress dots -->
+  <div id="konami-progress" aria-hidden="true">
+    <span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span>
+  </div>
+
   <!-- ── Konami Code Easter Egg ──────────────────────────────────────────── -->
   <!--
     To activate: type  ↑ ↑ ↓ ↓ ← → ← → B A  on your keyboard.
@@ -775,6 +810,21 @@
     ];
     let touchSeqPos = 0;
     let touchStartX = 0, touchStartY = 0, touchStartTime = 0;
+    let progressTimer;
+
+    function setTouchProgress(pos) {
+      const el = document.getElementById('konami-progress');
+      el.querySelectorAll('span').forEach((s, i) => s.classList.toggle('on', i < pos));
+      el.style.opacity = pos > 0 ? '1' : '0';
+      clearTimeout(progressTimer);
+      if (pos > 0) {
+        progressTimer = setTimeout(() => {
+          el.style.opacity = '0';
+          touchSeqPos = 0;
+          el.querySelectorAll('span').forEach(s => s.classList.remove('on'));
+        }, 3000);
+      }
+    }
 
     document.addEventListener('touchstart', e => {
       touchStartX = e.changedTouches[0].clientX;
@@ -784,14 +834,14 @@
 
     document.addEventListener('touchend', e => {
       if (document.getElementById('konami-overlay').style.display === 'flex') return;
-      if (Date.now() - touchStartTime > 500) return;
+      if (Date.now() - touchStartTime > 700) return;
 
       const dx = e.changedTouches[0].clientX - touchStartX;
       const dy = e.changedTouches[0].clientY - touchStartY;
       const dist = Math.hypot(dx, dy);
 
       let gesture;
-      if (dist < 40) {
+      if (dist < 30) {
         gesture = 'tap';
       } else if (Math.abs(dx) > Math.abs(dy)) {
         gesture = dx > 0 ? 'ArrowRight' : 'ArrowLeft';
@@ -803,10 +853,14 @@
         touchSeqPos++;
         if (touchSeqPos === KONAMI_TOUCH.length) {
           touchSeqPos = 0;
+          setTouchProgress(0);
           triggerKonami();
+        } else {
+          setTouchProgress(touchSeqPos);
         }
       } else {
         touchSeqPos = gesture === KONAMI_TOUCH[0] ? 1 : 0;
+        setTouchProgress(touchSeqPos);
       }
     }, { passive: true });
   </script>
