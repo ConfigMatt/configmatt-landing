@@ -624,10 +624,10 @@
           <button class="view-tab" id="tab-blog">Blog</button>
         </div>
         <nav class="blog-nav" id="blog-nav">
-          <button class="blog-nav-link active" data-url="https://blog.configmatt.com/">📝 All Posts</button>
-          <button class="blog-nav-link" data-url="https://blog.configmatt.com/categories/">🗂 Categories</button>
-          <button class="blog-nav-link" data-url="https://blog.configmatt.com/archives/">📅 Archives</button>
-          <button class="blog-nav-link" data-url="https://blog.configmatt.com/tags/">🏷 Tags</button>
+          <button class="blog-nav-link active" data-url="https://blog.configmatt.com/?embedded=1">📝 All Posts</button>
+          <button class="blog-nav-link" data-url="https://blog.configmatt.com/categories/?embedded=1">🗂 Categories</button>
+          <button class="blog-nav-link" data-url="https://blog.configmatt.com/archives/?embedded=1">📅 Archives</button>
+          <button class="blog-nav-link" data-url="https://blog.configmatt.com/tags/?embedded=1">🏷 Tags</button>
         </nav>
       </div>
 
@@ -1063,7 +1063,7 @@
     }
 
     function showBlog(url) {
-      url = url || 'https://blog.configmatt.com/';
+      url = url || 'https://blog.configmatt.com/?embedded=1';
       resumeView.style.display = 'none';
       blogView.classList.add('visible');
       blogNav.classList.add('visible');
