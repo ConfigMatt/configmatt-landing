@@ -765,6 +765,49 @@
     document.getElementById('konami-overlay').addEventListener('click', e => {
       if (e.target === document.getElementById('konami-overlay')) closeKonami();
     });
+
+    // Mobile: swipe ↑↑↓↓←→←→ then tap tap (maps Konami directions to swipes, B/A to taps)
+    const KONAMI_TOUCH = [
+      'ArrowUp','ArrowUp','ArrowDown','ArrowDown',
+      'ArrowLeft','ArrowRight','ArrowLeft','ArrowRight',
+      'tap','tap'
+    ];
+    let touchSeqPos = 0;
+    let touchStartX = 0, touchStartY = 0, touchStartTime = 0;
+
+    document.addEventListener('touchstart', e => {
+      touchStartX = e.changedTouches[0].clientX;
+      touchStartY = e.changedTouches[0].clientY;
+      touchStartTime = Date.now();
+    }, { passive: true });
+
+    document.addEventListener('touchend', e => {
+      if (document.getElementById('konami-overlay').style.display === 'flex') return;
+      if (Date.now() - touchStartTime > 500) return;
+
+      const dx = e.changedTouches[0].clientX - touchStartX;
+      const dy = e.changedTouches[0].clientY - touchStartY;
+      const dist = Math.hypot(dx, dy);
+
+      let gesture;
+      if (dist < 40) {
+        gesture = 'tap';
+      } else if (Math.abs(dx) > Math.abs(dy)) {
+        gesture = dx > 0 ? 'ArrowRight' : 'ArrowLeft';
+      } else {
+        gesture = dy > 0 ? 'ArrowDown' : 'ArrowUp';
+      }
+
+      if (gesture === KONAMI_TOUCH[touchSeqPos]) {
+        touchSeqPos++;
+        if (touchSeqPos === KONAMI_TOUCH.length) {
+          touchSeqPos = 0;
+          triggerKonami();
+        }
+      } else {
+        touchSeqPos = gesture === KONAMI_TOUCH[0] ? 1 : 0;
+      }
+    }, { passive: true });
   </script>
 </body>
 </html>
