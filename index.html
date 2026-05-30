@@ -4,6 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Matt Atkinson</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -117,6 +120,90 @@
       color: var(--muted);
       font-size: 0.8rem;
     }
+
+    /* ── Konami Easter Egg ──────────────────────────────────────────────── */
+
+    @keyframes nes-slide-in {
+      from { opacity: 0; transform: scale(0.93) translateY(16px); }
+      to   { opacity: 1; transform: scale(1)    translateY(0);    }
+    }
+
+    #konami-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.96);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #konami-modal {
+      font-family: 'Press Start 2P', monospace;
+      width: min(800px, 96vw);
+      background: #080808;
+      border: 3px solid #c0392b;
+      box-shadow:
+        0 0 0 3px #080808,
+        0 0 0 6px #c0392b,
+        0 0 70px rgba(192, 57, 43, 0.45);
+      padding: 1.25rem 1.5rem 1.5rem;
+      animation: nes-slide-in 0.22s ease-out;
+    }
+
+    #konami-titlebar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px solid #c0392b;
+    }
+
+    #konami-titlebar-text {
+      color: #c0392b;
+      font-size: 0.52rem;
+      letter-spacing: 0.1em;
+      line-height: 1.6;
+    }
+
+    #konami-titlebar-text .highlight { color: #f39c12; }
+
+    #konami-close-btn {
+      background: transparent;
+      border: 2px solid #c0392b;
+      color: #c0392b;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.48rem;
+      padding: 0.35rem 0.65rem;
+      cursor: pointer;
+      letter-spacing: 0.06em;
+      flex-shrink: 0;
+      transition: background 0.1s, color 0.1s;
+    }
+
+    #konami-close-btn:hover {
+      background: #c0392b;
+      color: #fff;
+    }
+
+    #nes-screen {
+      width: 100%;
+    }
+
+    #konami-controls {
+      margin-top: 0.75rem;
+      text-align: center;
+      color: #3a3a3a;
+      font-size: 0.42rem;
+      letter-spacing: 0.08em;
+      line-height: 1.8;
+    }
+
+    #konami-controls em {
+      color: #666;
+      font-style: normal;
+    }
   </style>
 </head>
 <body>
@@ -155,5 +242,105 @@
     <div class="divider"></div>
     <footer>configmatt.com</footer>
   </div>
+
+  <!-- ── Konami Code Easter Egg ──────────────────────────────────────────── -->
+  <!--
+    To activate: type  ↑ ↑ ↓ ↓ ← → ← → B A  on your keyboard.
+    Requires contra.nes in the same directory as this file.
+  -->
+  <div id="konami-overlay">
+    <div id="konami-modal">
+      <div id="konami-titlebar">
+        <span id="konami-titlebar-text">
+          ↑↑↓↓←→←→ B A &nbsp;—&nbsp;
+          <span class="highlight">30 LIVES ACTIVATED</span>
+        </span>
+        <button id="konami-close-btn">[ ESC ]</button>
+      </div>
+
+      <!-- EmulatorJS mounts here -->
+      <div id="nes-screen"></div>
+
+      <div id="konami-controls">
+        <em>ARROWS</em>&nbsp;MOVE &nbsp;·&nbsp;
+        <em>Z</em>&nbsp;JUMP/FIRE &nbsp;·&nbsp;
+        <em>X</em>&nbsp;JUMP &nbsp;·&nbsp;
+        <em>ENTER</em>&nbsp;START &nbsp;·&nbsp;
+        <em>SHIFT</em>&nbsp;SELECT
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const KONAMI = [
+      'ArrowUp','ArrowUp','ArrowDown','ArrowDown',
+      'ArrowLeft','ArrowRight','ArrowLeft','ArrowRight',
+      'b','a'
+    ];
+    let seqPos = 0;
+    let emulatorLaunched = false;
+
+    document.addEventListener('keydown', handleKey);
+
+    function handleKey(e) {
+      if (e.key === KONAMI[seqPos]) {
+        seqPos++;
+        if (seqPos === KONAMI.length) {
+          seqPos = 0;
+          triggerKonami();
+        }
+      } else {
+        seqPos = (e.key === KONAMI[0]) ? 1 : 0;
+      }
+
+      if (e.key === 'Escape') closeKonami();
+    }
+
+    function triggerKonami() {
+      // White flash on activation
+      const flash = document.createElement('div');
+      Object.assign(flash.style, {
+        position: 'fixed', inset: '0',
+        background: '#ffffff', opacity: '0.85',
+        zIndex: '9998', pointerEvents: 'none',
+        transition: 'opacity 0.4s ease'
+      });
+      document.body.appendChild(flash);
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        flash.style.opacity = '0';
+        setTimeout(() => flash.remove(), 400);
+      }));
+
+      document.getElementById('konami-overlay').style.display = 'flex';
+
+      if (!emulatorLaunched) {
+        emulatorLaunched = true;
+        loadEmulator();
+      }
+    }
+
+    function loadEmulator() {
+      // EmulatorJS — drop contra.nes next to index.html to activate
+      window.EJS_player        = '#nes-screen';
+      window.EJS_core          = 'nes';
+      window.EJS_gameUrl       = 'https://github.com/NESretropier/NES/raw/refs/heads/master/Contra.nes';
+      window.EJS_pathtodata    = 'https://cdn.emulatorjs.org/stable/data/';
+      window.EJS_startOnLoaded = true;
+
+      const s = document.createElement('script');
+      s.src = 'https://cdn.emulatorjs.org/stable/data/loader.js';
+      document.body.appendChild(s);
+    }
+
+    function closeKonami() {
+      document.getElementById('konami-overlay').style.display = 'none';
+    }
+
+    document.getElementById('konami-close-btn').addEventListener('click', closeKonami);
+
+    document.getElementById('konami-overlay').addEventListener('click', e => {
+      if (e.target === document.getElementById('konami-overlay')) closeKonami();
+    });
+  </script>
 </body>
 </html>
