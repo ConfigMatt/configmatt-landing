@@ -562,36 +562,43 @@
     .blog-nav-link.active { background: rgba(79,142,247,0.1); color: var(--accent); }
 
     /* ── Blog iframe view ────────────────────────────────────────────────── */
+
+    /* Give the card a fixed viewport height in blog mode so children can fill it */
+    .card.blog-mode {
+      height: calc(100vh - 5rem);
+      align-items: stretch;
+    }
+
+    /* main must be a flex column so blog-view can grow into it */
+    .card.blog-mode .main {
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
     #blog-view {
       display: none;
-      flex-direction: column;
       flex: 1;
+      flex-direction: column;
+      min-height: 0; /* required for flex children to shrink */
     }
 
     #blog-view.visible { display: flex; }
 
-    #blog-iframe {
-      flex: 1;
-      border: none;
-      width: 100%;
-      height: calc(100vh - 5rem);
-      background: #0b0d14;
-      border-radius: 0 12px 12px 0;
-    }
-
-    .card.blog-mode {
-      min-height: calc(100vh - 5rem);
-      align-items: stretch;
-    }
-
-    .card.blog-mode .main { padding: 0; }
-
-    /* iframe loading shimmer */
     #blog-iframe-wrap {
       position: relative;
       flex: 1;
       display: flex;
       flex-direction: column;
+      min-height: 0;
+    }
+
+    #blog-iframe {
+      flex: 1;
+      border: none;
+      width: 100%;
+      background: #0b0d14;
+      border-radius: 0 12px 12px 0;
     }
 
     #blog-loading {
