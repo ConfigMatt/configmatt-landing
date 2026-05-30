@@ -744,11 +744,12 @@
     }
 
     function loadEmulator() {
-      window.EJS_player        = '#nes-screen';
-      window.EJS_core          = 'nes';
-      window.EJS_gameUrl       = 'https://raw.githubusercontent.com/NESretropier/NES/refs/heads/master/Contra.nes';
-      window.EJS_pathtodata    = 'https://cdn.emulatorjs.org/stable/data/';
-      window.EJS_startOnLoaded = true;
+      window.EJS_player          = '#nes-screen';
+      window.EJS_core            = 'nes';
+      window.EJS_gameUrl         = 'https://raw.githubusercontent.com/NESretropier/NES/refs/heads/master/Contra.nes';
+      window.EJS_pathtodata      = 'https://cdn.emulatorjs.org/stable/data/';
+      window.EJS_startOnLoaded   = true;
+      window.EJS_mobileControls  = ('ontouchstart' in window);
 
       const s = document.createElement('script');
       s.src = 'https://cdn.emulatorjs.org/stable/data/loader.js';
