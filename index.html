@@ -502,6 +502,112 @@
       background: var(--accent);
       border-color: var(--accent);
     }
+
+    /* ── View switcher ───────────────────────────────────────────────────── */
+    .view-toggle {
+      display: flex;
+      gap: 3px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 3px;
+    }
+
+    .view-tab {
+      flex: 1;
+      padding: 0.42rem 0.5rem;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      font-size: 0.77rem;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+      letter-spacing: 0.01em;
+    }
+
+    .view-tab.active {
+      background: var(--gradient);
+      color: #fff;
+    }
+
+    /* ── Blog sub-nav ────────────────────────────────────────────────────── */
+    .blog-nav {
+      display: none;
+      flex-direction: column;
+      gap: 0.2rem;
+      padding-top: 0.1rem;
+    }
+
+    .blog-nav.visible { display: flex; }
+
+    .blog-nav-link {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      padding: 0.42rem 0.75rem;
+      border-radius: 7px;
+      font-size: 0.8rem;
+      color: var(--muted);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+      text-align: left;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .blog-nav-link:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+    .blog-nav-link.active { background: rgba(79,142,247,0.1); color: var(--accent); }
+
+    /* ── Blog iframe view ────────────────────────────────────────────────── */
+    #blog-view {
+      display: none;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    #blog-view.visible { display: flex; }
+
+    #blog-iframe {
+      flex: 1;
+      border: none;
+      width: 100%;
+      height: calc(100vh - 5rem);
+      background: #0b0d14;
+      border-radius: 0 12px 12px 0;
+    }
+
+    .card.blog-mode {
+      min-height: calc(100vh - 5rem);
+      align-items: stretch;
+    }
+
+    .card.blog-mode .main { padding: 0; }
+
+    /* iframe loading shimmer */
+    #blog-iframe-wrap {
+      position: relative;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #blog-loading {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      font-size: 0.85rem;
+      background: #0b0d14;
+      border-radius: 0 12px 12px 0;
+      z-index: 2;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
   </style>
 </head>
 <body>
@@ -520,6 +626,20 @@
         <p class="location">📍 Portland, Oregon</p>
       </div>
 
+      <!-- View switcher -->
+      <div>
+        <div class="view-toggle">
+          <button class="view-tab active" id="tab-resume">Resume</button>
+          <button class="view-tab" id="tab-blog">Blog</button>
+        </div>
+        <nav class="blog-nav" id="blog-nav">
+          <button class="blog-nav-link active" data-url="https://blog.configmatt.com/">📝 All Posts</button>
+          <button class="blog-nav-link" data-url="https://blog.configmatt.com/categories/">🗂 Categories</button>
+          <button class="blog-nav-link" data-url="https://blog.configmatt.com/archives/">📅 Archives</button>
+          <button class="blog-nav-link" data-url="https://blog.configmatt.com/tags/">🏷 Tags</button>
+        </nav>
+      </div>
+
       <div>
         <div class="sidebar-label">Connect</div>
         <div class="sidebar-links">
@@ -528,9 +648,6 @@
               <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
             </svg>
             LinkedIn
-          </a>
-          <a class="btn" href="https://blog.configmatt.com" target="_blank" rel="noopener">
-            📝&nbsp; Blog
           </a>
           <a class="btn" href="https://github.com/ConfigMatt" target="_blank" rel="noopener">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
@@ -623,7 +740,8 @@
     </aside>
 
     <!-- ── Main ──────────────────────────────────────────────────────────── -->
-    <main class="main">
+    <main class="main" id="main-area">
+      <div id="resume-view">
 
       <section class="section">
         <h2 class="section-title">About</h2>
@@ -751,6 +869,17 @@
       </section>
 
       <p class="page-footer">configmatt.com</p>
+      </div><!-- /#resume-view -->
+
+      <!-- Blog iframe view -->
+      <div id="blog-view">
+        <div id="blog-iframe-wrap">
+          <div id="blog-loading">Loading blog…</div>
+          <iframe id="blog-iframe" title="ConfigMatt Blog" src="about:blank"
+            onload="document.getElementById('blog-loading').style.opacity='0'">
+          </iframe>
+        </div>
+      </div>
 
     </main>
   </div>
@@ -919,6 +1048,54 @@
         setTouchProgress(touchSeqPos);
       }
     }, { passive: true });
+
+    /* ── View switcher ─────────────────────────────────────────────────── */
+    const card        = document.querySelector('.card');
+    const resumeView  = document.getElementById('resume-view');
+    const blogView    = document.getElementById('blog-view');
+    const blogNav     = document.getElementById('blog-nav');
+    const tabResume   = document.getElementById('tab-resume');
+    const tabBlog     = document.getElementById('tab-blog');
+    const blogIframe  = document.getElementById('blog-iframe');
+    const blogLoading = document.getElementById('blog-loading');
+    const navLinks    = document.querySelectorAll('.blog-nav-link');
+    let   blogLoaded  = false;
+
+    function showResume() {
+      resumeView.style.display = '';
+      blogView.classList.remove('visible');
+      blogNav.classList.remove('visible');
+      card.classList.remove('blog-mode');
+      tabResume.classList.add('active');
+      tabBlog.classList.remove('active');
+      history.replaceState(null, '', '/');
+    }
+
+    function showBlog(url) {
+      url = url || 'https://blog.configmatt.com/';
+      resumeView.style.display = 'none';
+      blogView.classList.add('visible');
+      blogNav.classList.add('visible');
+      card.classList.add('blog-mode');
+      tabBlog.classList.add('active');
+      tabResume.classList.remove('active');
+
+      navLinks.forEach(l => l.classList.toggle('active', l.dataset.url === url));
+
+      if (!blogLoaded || blogIframe.src !== url) {
+        blogLoading.style.opacity = '1';
+        blogIframe.src = url;
+        blogLoaded = true;
+      }
+
+      history.replaceState(null, '', '#blog');
+    }
+
+    tabResume.addEventListener('click', showResume);
+    tabBlog.addEventListener('click', () => showBlog());
+    navLinks.forEach(l => l.addEventListener('click', () => showBlog(l.dataset.url)));
+
+    if (location.hash === '#blog') showBlog();
   </script>
 </body>
 </html>
