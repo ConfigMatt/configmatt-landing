@@ -1,0 +1,51 @@
+name: Lighthouse CI
+
+# TRIGGER: Run this workflow whenever a commit is pushed to main.
+# You can also add "pull_request" here if you ever use branches.
+on:
+  push:
+    branches: [main]
+
+jobs:
+  lighthouse:
+    name: Lighthouse audit
+    # RUNNER: GitHub spins up a fresh Ubuntu virtual machine for each run.
+    # It's destroyed after the job finishes — nothing persists between runs.
+    runs-on: ubuntu-latest
+
+    steps:
+      # STEP 1 — Checkout
+      # Downloads your repo files onto the virtual machine so the
+      # next steps can work with them. Almost every workflow starts here.
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # STEP 2 — Serve the site locally
+      # Lighthouse needs an HTTP server to audit — it can't audit a local file.
+      # Python 3 ships on every ubuntu-latest runner, so we use its built-in
+      # HTTP server. The "&" at the end runs it in the background so the
+      # next step can start immediately.
+      - name: Serve site
+        run: python3 -m http.server 3000 &
+
+      # STEP 3 — Wait for the server
+      # The server needs a moment to start before Lighthouse tries to connect.
+      - name: Wait for server to be ready
+        run: sleep 3
+
+      # STEP 4 — Run Lighthouse
+      # This uses a pre-built Action from the GitHub Marketplace
+      # (treosh/lighthouse-ci-action). "uses" pulls in someone else's
+      # reusable Action the same way npm pulls in a package.
+      #
+      # uploadArtifacts: saves the full HTML report as a downloadable
+      #   file attached to the workflow run.
+      # temporaryPublicStorage: also uploads the report to a public URL
+      #   so you can open it directly in your browser from the Actions tab.
+      - name: Run Lighthouse
+        uses: treosh/lighthouse-ci-action@v11
+        with:
+          urls: |
+            http://localhost:3000
+          uploadArtifacts: true
+          temporaryPublicStorage: true
